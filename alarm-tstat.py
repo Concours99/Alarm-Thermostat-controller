@@ -17,15 +17,23 @@ RELAY_PIN = 10
 
 from WGHelper import *
 from WGRadioThermostat import *
-from time import sleep
+import time
 import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
 
 def alarm_callback(channel) :
-    sleep(0.25) # needed to let things settle
+    global previous
+    # see if we're bouncing
+    current = time.time()
+    if (current - previous) < 7.0 :
+        WGTracePrint("Bouncing?  Seconds since last call = " + str(current - previous))
+        previous = current
+        return
+    
+    time.sleep(0.25) # needed to let things settle
     if RadThermGetInt("tmode", TRACE) == TMODE_HEAT : # heat mode
         # if the pin goes high
         if GPIO.input(RELAY_PIN) :
-            WGTracePrint("System armed!")
+            WGTracePrint("System armed! Seconds since last call = " + str(current - previous))
             # set the thermostat back
             setback_temp = RadThermGetTodaysLowestSetting(TRACE)
             if (setback_temp != RadTherm_float_ERROR) :
@@ -44,7 +52,7 @@ def alarm_callback(channel) :
                     return
         else :
             # if the pin is low
-            WGTracePrint("System disarmed!")
+            WGTracePrint("System disarmed! Seconds since last call = " + str(current - previous))
             # turn the night light on
             intret = RadThermSetInt("intensity", NIGHTLIGHT_ON, TRACE)
             if intret == RadTherm_int_ERROR :
@@ -62,6 +70,7 @@ def alarm_callback(channel) :
             if intret == RadTherm_int_ERROR :
                 return # try again next time
             # !!! Now should be running current program !!!
+        previous = current
     # else : Don't worry about doing anything in the non-heating season
     
 GPIO.setwarnings(False) # Ignore warning for now
@@ -73,7 +82,9 @@ GPIO.add_event_detect(RELAY_PIN, GPIO.BOTH, callback = alarm_callback,
 	bouncetime = 500)
     
 running = True
+previous = time.time()
 
+WGTracePrint("Alarm/Tstat controller started")
 while (running) :
-    sleep(1)
+    time.sleep(1)
 # GPIO.cleanup()  # clean up after yourself  
