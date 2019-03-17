@@ -10,7 +10,7 @@
 #
 ################################################################################
 
-__version__ = "v1.0"
+__version__ = "v1.01"
 TRACE = False
 
 RELAY_PIN = 10
@@ -22,6 +22,7 @@ import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
 
 def alarm_callback(channel) :
     global previous
+    global armed
     # see if we're bouncing
     current = time.time()
     if (current - previous) < 7.0 :
@@ -50,28 +51,34 @@ def alarm_callback(channel) :
                 intret = RadThermSetInt("intensity", NIGHTLIGHT_OFF, TRACE)
                 if intret == RadTherm_int_ERROR :
                     return
-        else :
-            # if the pin is low
-            WGTracePrint("System disarmed! Seconds since last call = " + str(current - previous))
-            # turn the night light on
-            intret = RadThermSetInt("intensity", NIGHTLIGHT_ON, TRACE)
-            if intret == RadTherm_int_ERROR :
-                return
-            # disable hold
-            intret = RadThermSetInt("hold", HOLD_DISABLED, TRACE)
-            if intret == RadTherm_int_ERROR :
-                return
-            # set the tstat to SAVE_ENERGY_MODE
-            intret = RadThermSetInt("mode", SAVE_ENERGY_MODE_ENABLE, TRACE)
-            if intret == RadTherm_int_ERROR :
-                return # try again next time
-            # turn off SAVE_ENERGY_MODE
-            intret = RadThermSetInt("mode", SAVE_ENERGY_MODE_DISABLE, TRACE)
-            if intret == RadTherm_int_ERROR :
-                return # try again next time
-            # !!! Now should be running current program !!!
+                armed = True
+        else : # the pin is low
+            if armed :
+                WGTracePrint("System disarmed! Seconds since last call = " + str(current - previous))
+                # turn the night light on
+                intret = RadThermSetInt("intensity", NIGHTLIGHT_ON, TRACE)
+                if intret == RadTherm_int_ERROR :
+                    return
+                # disable hold
+                intret = RadThermSetInt("hold", HOLD_DISABLED, TRACE)
+                if intret == RadTherm_int_ERROR :
+                    return
+                # set the tstat to SAVE_ENERGY_MODE
+                intret = RadThermSetInt("mode", SAVE_ENERGY_MODE_ENABLE, TRACE)
+                if intret == RadTherm_int_ERROR :
+                    return
+                # turn off SAVE_ENERGY_MODE
+                intret = RadThermSetInt("mode", SAVE_ENERGY_MODE_DISABLE, TRACE)
+                if intret == RadTherm_int_ERROR :
+                    return
+                # !!! Now should be running current program !!!
+                armed = False
+            else : # already disarmed
+                WGTracePrint("System already disarmed, ignoring! Seconds since last call = " + str(current - previous))
         previous = current
-    # else : Don't worry about doing anything in the non-heating season
+    else : # Don't worry about doing anything in the non-heating season
+        WGTracePrint("Non-heating season, ignoring! Seconds since last call = " + str(current - previous))
+        previous = current
     
 GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
@@ -83,8 +90,9 @@ GPIO.add_event_detect(RELAY_PIN, GPIO.BOTH, callback = alarm_callback,
     
 running = True
 previous = time.time()
+armed = False
 
-WGTracePrint("Alarm/Tstat controller started")
+WGTracePrint("Alarm/Tstat controller started.  Version: " + __version__)
 while (running) :
     time.sleep(1)
 # GPIO.cleanup()  # clean up after yourself  
