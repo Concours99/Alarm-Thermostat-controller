@@ -46,45 +46,45 @@ def setback_tstat():
     """ Set the thermostat to the lowest temp setting on today's prog. """
     setback_temp = radtherm_get_todays_lowest_setting(TRACE)
     if setback_temp != RADTHERM_FLOAT_ERROR:
-        wg_trace_print("Setting target temp to " + str(setback_temp))
+        wg_trace_print("Setting target temp to " + str(setback_temp), TRACE)
         # set the temporary temperature to the value we found, above
-        floatret = radtherm_set_float("t_heat", setback_temp)
+        floatret = radtherm_set_float("t_heat", setback_temp, TRACE)
         if floatret == RADTHERM_FLOAT_ERROR:
-            wg_trace_print("Error setting t_heat")
+            wg_error_print("setback_tstat", "Error setting t_heat")
             return
         # set the t-stat to hold
-        intret = radtherm_set_int("hold", HOLD_ENABLED)
+        intret = radtherm_set_int("hold", HOLD_ENABLED, TRACE)
         if intret == RADTHERM_INT_ERROR:
-            wg_trace_print("Error setting hold")
+            wg_error_print("setback_tstat", "Error setting hold")
             return
         # turn the night light off
-        intret = radtherm_set_int("intensity", NIGHTLIGHT_OFF)
+        intret = radtherm_set_int("intensity", NIGHTLIGHT_OFF, TRACE)
         if intret == RADTHERM_INT_ERROR:
-            wg_trace_print("Error setting intensity")
+            wg_error_print("setback_tstat", "Error setting intensity")
             return
 
 
 def run_tstat():
     """ Run the current thermostat prog. """
     # turn the night light on
-    intret = radtherm_set_int("intensity", NIGHTLIGHT_ON)
+    intret = radtherm_set_int("intensity", NIGHTLIGHT_ON, TRACE)
     if intret == RADTHERM_INT_ERROR:
-        wg_trace_print("Error setting intensity")
+        wg_error_print("run_tstat", "Error setting intensity")
         return
     # disable hold
-    intret = radtherm_set_int("hold", HOLD_DISABLED)
+    intret = radtherm_set_int("hold", HOLD_DISABLED, TRACE)
     if intret == RADTHERM_INT_ERROR:
-        wg_trace_print("Error setting hold")
+        wg_trace_print("Error setting hold", TRACE)
         return
     # set the tstat to SAVE_ENERGY_MODE
-    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_ENABLE)
+    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_ENABLE, TRACE)
     if intret == RADTHERM_INT_ERROR:
-        wg_trace_print("Error enabling save energy mode")
+        wg_error_print("run_tstat", "Error enabling save energy mode")
         return
     # turn off SAVE_ENERGY_MODE
-    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_DISABLE)
+    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_DISABLE, TRACE)
     if intret == RADTHERM_INT_ERROR:
-        wg_trace_print("Error disabling save energy mode")
+        wg_error_print("run_tstat", "Error disabling save energy mode")
         return
     # !!! Now should be running current program !!!
 
@@ -105,7 +105,7 @@ def main():
     running = True
     previous = time()
 
-    wg_trace_print("Alarm/Tstat controller started.  Version: " + __version__)
+    wg_trace_print("Alarm/Tstat controller started.  Version: " + __version__, True)
     while running:
         sleep(1)
         current = time()
@@ -117,19 +117,17 @@ def main():
                 # if the pin goes high
                 if GPIO.input(RELAY_PIN) and not armed:
                     if radtherm_get_int("tmode", TRACE) == TMODE_HEAT: # heat mode
-                        wg_trace_print("System armed! Seconds since last call = " +
-                                       str(current - previous))
+                        wg_trace_print("System armed!", True)
                         # set the thermostat back
                         setback_tstat()
                         armed = True
                 elif not GPIO.input(RELAY_PIN) and armed:
                     if radtherm_get_int("tmode", TRACE) == TMODE_HEAT: # heat mode
-                        wg_trace_print("System disarmed! Seconds since last call = " +
-                                       str(current - previous))
+                        wg_trace_print("System disarmed!", True)
                         # run current program
                         run_tstat()
                         armed = False
-        previous = current
+            previous = current
 
     GPIO.cleanup()  # clean up after yourself
 

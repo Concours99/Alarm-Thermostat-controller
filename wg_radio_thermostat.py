@@ -100,7 +100,7 @@ def radtherm_get_float(what, trace):
         if trace:
             pprt = pprint.PrettyPrinter(indent=4)
             pprt.pprint(retval)
-            wg_trace_print(what + " is " + str(retval[what]))
+            wg_trace_print(what + " is " + str(retval[what]), trace)
         return retval[what]
     except Exception: #pylint: disable=W0703
         wg_error_print("radtherm_get_float", " Unsuccessful GET request (exception) of " + what)
@@ -134,7 +134,7 @@ def radtherm_get_int(what, trace):
         if trace:
             pprt = pprint.PrettyPrinter(indent=4)
             pprt.pprint(retval)
-            wg_trace_print(what + " is " + str(retval[what]))
+            wg_trace_print(what + " is " + str(retval[what]), trace)
         return retval[what]
     except Exception: #pylint: disable=W0703
         wg_error_print("radtherm_get_int", " Unsuccessful GET request (exception) of " + what)
@@ -149,7 +149,7 @@ def radtherm_get_int(what, trace):
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def radtherm_set_float(what, value):
+def radtherm_set_float(what, value, trace):
     """Set the value of a piece of floating point data from the thermostat"""
     try:
         if what != "t_heat":
@@ -181,7 +181,7 @@ def radtherm_set_float(what, value):
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def radtherm_set_int(what, value):
+def radtherm_set_int(what, value, trace):
     """Set the value of a piece of integer data from the thermostat"""
     try:
         if what in ("fmode", "tmode", "hold"):
@@ -217,7 +217,7 @@ def radtherm_set_int(what, value):
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def radtherm_set_str(what, value):
+def radtherm_set_str(what, value, trace):
     """Set the value of a piece of string data from the thermostat"""
     try:
         if what == "uma_line0":
