@@ -1,18 +1,17 @@
+"""Routines to query and control Radio Thermostat WiFi thermostat"""
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Copyright (C) 2018, Wayne Geiser (geiserw@gmail.com).  All Rights Reserved
 #
 # Helper functiona and definitions to interface with a Radio Thermostat
-
-WGRadioThermostat_version = "1.02"
-
-from urllib3 import PoolManager
-import json
-from urllib.request import urlretrieve, urlopen
-import pprint
 import datetime
+import pprint
+import json
+from urllib3 import PoolManager
+from wg_helper import wg_error_print
+from wg_helper import wg_trace_print
 
-from WGHelper import *
+WG_RADIO_THERMOSTAT_VERSION = "2.0"
 
 # The name (URL) of your Radio Thermostat
 TSTAT_IP = "thermostat-76-8C-C9"
@@ -35,10 +34,14 @@ HOLD_ENABLED = 1
 NIGHTLIGHT_OFF = 0
 NIGHTLIGHT_ON = 4
 
-RadTherm_float_ERROR = -999.0
-RadTherm_int_ERROR = -999
-RadTherm_str_ERROR = "ERROR"
-RadTherm_status_ERROR = {"error" : -1}
+RADTHERM_FLOAT_ERROR = -999.0
+RADTHERM_FLOAT_SUCCESS = 999.0
+RADTHERM_INT_ERROR = -999
+RADTHERM_INT_SUCCESS = 999
+RADTHERM_STR_ERROR = "ERROR"
+RADTHERM_STR_SUCCESS = "SUCCESS"
+RADTHERM_STATUS_ERROR = {"error" : -1}
+RADTHERM_STATUS_SUCCESS = {"success" : 0}
 
 ###############################################################################
 #
@@ -55,21 +58,21 @@ RadTherm_status_ERROR = {"error" : -1}
 #   time = json object containing day of week, hour, minute
 #   t_type_post = target temp post type (deprecated, do not use)
 #
-def RadThermStatus(trace) :
+def radtherm_status():
+    """Return the status of the thermostat"""
     try:
-        pm = PoolManager()
+        pman = PoolManager()
         url = 'http://' + TSTAT_IP +'/tstat'
-        r = pm.request('GET', url)
-        retval = json.loads(r.data.decode('utf-8'))
-        if 'error' in retval :
-            WGErrorPrint("RadThermStatus", " Unsuccessful status request (exception)")
-            return RadTherm_status_ERROR
-        else :
-            return retval
-    except :
-        WGErrorPrint("RadThermStatus", " Unsuccessful status request (exception)")
-        return RadTherm_status_ERROR
-       
+        ret = pman.request('GET', url)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if 'error' in retval:
+            wg_error_print("radtherm_status", " Unsuccessful status request (error)")
+            return RADTHERM_STATUS_ERROR
+        return retval
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_status", " Unsuccessful status request (exception)")
+        return RADTHERM_STATUS_ERROR
+
 ###############################################################################
 #
 # Make a call to the thermostat to get a floating point data value.
@@ -78,31 +81,30 @@ def RadThermStatus(trace) :
 #       temp = current temperature
 #   trace = true or false, print trace messages
 #
-def RadThermGetFloat(what, trace) :
-    try :
-        if what == "temp" :
+def radtherm_get_float(what, trace):
+    """Get the value of a piece of floating point data from the thermostat"""
+    try:
+        if what == "temp":
             resource = "temp"
-        else :
-            if what == "humidity" :
-                resource = "humidity"
-            else :
-                if what == "t_heat" :
-                    resource = ""
-                else :
-                    WGErrorPrint("RadThermGetFloat", " Invalid 'what' argument " + what)
-                    return RadTherm_float_ERROR
-        pm = PoolManager()
+        elif what == "humidity":
+            resource = "humidity"
+        elif what == "t_heat":
+            resource = ""
+        else:
+            wg_error_print("radtherm_get_float", " Invalid 'what' argument " + what)
+            return RADTHERM_FLOAT_ERROR
+        pman = PoolManager()
         url = 'http://' + TSTAT_IP +'/tstat/' + resource
-        r = pm.request('GET', url)
-        ht = json.loads(r.data.decode('utf-8'))
-        if trace :
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(ht)
-            WGTracePrint(what + " is " + str(ht[what]))
-        return ht[what]
-    except :
-        WGErrorPrint("RadThermGetFloat", " Unsuccessful GET request (exception) of " + what)
-        return RadTherm_float_ERROR
+        ret = pman.request('GET', url)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if trace:
+            pprt = pprint.PrettyPrinter(indent=4)
+            pprt.pprint(retval)
+            wg_trace_print(what + " is " + str(retval[what]), trace)
+        return retval[what]
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_get_float", " Unsuccessful GET request (exception) of " + what)
+        return RADTHERM_FLOAT_ERROR
 
 ###############################################################################
 #
@@ -115,28 +117,28 @@ def RadThermGetFloat(what, trace) :
 #       hold = Target temperature hold status (see above for values)
 #   trace = true or false, print trace messages
 #
-def RadThermGetInt(what, trace) :
-    try :
-        if (what == "fmode") or (what == "tmode") or (what == "hold") :
+def radtherm_get_int(what, trace):
+    """Get the value of a piece of integer data from the thermostat"""
+    try:
+        if what in ("fmode", "tmode", "hold"):
             resource = what
-        else :
-            if what == "mode" :
-                resource = "save_energy/"
-            else :
-                WGErrorPrint("RadThermGetInt", " Invalid 'what' argument " + what)
-                return RadTherm_int_ERROR
-        pm = PoolManager()
+        elif what == "mode":
+            resource = "save_energy/"
+        else:
+            wg_error_print("radtherm_get_int", " Invalid 'what' argument " + what)
+            return RADTHERM_INT_ERROR
+        pman = PoolManager()
         url = 'http://' + TSTAT_IP +'/tstat/' + resource
-        r = pm.request('GET', url)
-        ht = json.loads(r.data.decode('utf-8'))
-        if trace :
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(ht)
-            WGTracePrint(what + " is " + str(ht[what]))
-        return ht[what]
-    except :
-        WGErrorPrint("RadThermGetInt", " Unsuccessful GET request (exception) of " + what)
-        return RadTherm_int_ERROR
+        ret = pman.request('GET', url)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if trace:
+            pprt = pprint.PrettyPrinter(indent=4)
+            pprt.pprint(retval)
+            wg_trace_print(what + " is " + str(retval[what]), trace)
+        return retval[what]
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_get_int", " Unsuccessful GET request (exception) of " + what)
+        return RADTHERM_INT_ERROR
 
 ###############################################################################
 #
@@ -147,24 +149,25 @@ def RadThermGetInt(what, trace) :
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def RadThermSetFloat(what, value, trace) :
-    try :
-        if what == "t_heat" :
-            resource = ""
-        else :
-            WGErrorPrint("RadThermSetFloat", " Invalid 'what' argument " + what)
-        pm = PoolManager()
+def radtherm_set_float(what, value, trace):
+    """Set the value of a piece of floating point data from the thermostat"""
+    try:
+        if what != "t_heat":
+            wg_error_print("radtherm_set_float", " Invalid 'what' argument " + what)
+            return RADTHERM_FLOAT_ERROR
+        pman = PoolManager()
         encoded_body = json.dumps({what: value})
-        r = pm.request_encode_url('POST', 'http://' + TSTAT_IP +'/tstat',
-                                    headers={'Content-Type': 'application/json'},
-                                    body=encoded_body)
-        ht = json.loads(r.data.decode('utf-8'))
-        if 'success' not in ht :
-            WGErrorPrint("RadThermSetFloat", " Unsuccessful POST request of " + what)
-            return RadTherm_float_ERROR
-    except :
-        WGErrorPrint("RadThermSetFloat", " Unsuccessful POST request (exception) of " + what)
-        return RadTherm_float_ERROR
+        ret = pman.request_encode_url('POST', 'http://' + TSTAT_IP +'/tstat',
+                                      headers={'Content-Type': 'application/json'},
+                                      body=encoded_body)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if 'success' not in retval:
+            wg_error_print("radtherm_set_float", " Unsuccessful POST request (error) of " + what)
+            return RADTHERM_FLOAT_ERROR
+        return RADTHERM_FLOAT_SUCCESS
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_set_float", " Unsuccessful POST request (exception) of " + what)
+        return RADTHERM_FLOAT_ERROR
 
 ###############################################################################
 #
@@ -178,31 +181,31 @@ def RadThermSetFloat(what, value, trace) :
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def RadThermSetInt(what, value, trace) :
-    try :
-        if (what == "fmode") or (what == "tmode") or (what == "hold") :
+def radtherm_set_int(what, value, trace):
+    """Set the value of a piece of integer data from the thermostat"""
+    try:
+        if what in ("fmode", "tmode", "hold"):
             resource = ""
-        else :
-            if what == "mode" :
-                resource = "/save_energy"
-            else :
-                if what == "intensity" :
-                    resource = "/night_light"
-                else :
-                    WGErrorPrint("RadThermGetInt", " Invalid 'what' argument " + what)
-                    return RadTherm_int_ERROR
-        pm = PoolManager()
+        elif what == "mode":
+            resource = "/save_energy"
+        elif what == "intensity":
+            resource = "/night_light"
+        else:
+            wg_error_print("radtherm_set_int", " Invalid 'what' argument " + what)
+            return RADTHERM_INT_ERROR
+        pman = PoolManager()
         encoded_body = json.dumps({what: value})
-        r = pm.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat' + resource,
-                                    headers={'Content-Type': 'application/json'},
-                                    body=encoded_body)
-        ht = json.loads(r.data.decode('utf-8'))
-        if 'success' not in ht :
-            WGErrorPrint("RadThermSetInt", " Unsuccessful POST request of " + what)
-            return RadTherm_int_ERROR
-    except :
-        WGErrorPrint("RadThermSetInt", " Unsuccessful POST request (exception) of " + what)
-        return RadTherm_int_ERROR
+        ret = pman.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat' + resource,
+                                      headers={'Content-Type': 'application/json'},
+                                      body=encoded_body)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if 'success' not in retval:
+            wg_error_print("radtherm_set_int", " Unsuccessful POST request (error) of " + what)
+            return RADTHERM_INT_ERROR
+        return RADTHERM_INT_SUCCESS
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_set_int", " Unsuccessful POST request (exception) of " + what)
+        return RADTHERM_INT_ERROR
 
 ###############################################################################
 #
@@ -214,30 +217,31 @@ def RadThermSetInt(what, value, trace) :
 #   value = what to set it to
 #   trace = true or false, print trace messages
 #
-def RadThermSetStr(what, value, trace) :
-    try :
-        if what == "uma_line0" :
+def radtherm_set_str(what, value, trace):
+    """Set the value of a piece of string data from the thermostat"""
+    try:
+        if what == "uma_line0":
             line = 0
             resource = '/uma'
-        else :
-            if what == "uma_line1" :
-                line = 1
-                resource = '/uma'
-            else :
-                WGErrorPrint("RadThermSet Str", " Invalid 'what' argument " + what)
-                return RadTherm_str_ERROR
-        pm = PoolManager()
+        elif what == "uma_line1":
+            line = 1
+            resource = '/uma'
+        else:
+            wg_error_print("radtherm_set_str", " Invalid 'what' argument " + what)
+            return RADTHERM_STR_ERROR
+        pman = PoolManager()
         encoded_body = json.dumps({"line": line, "message": value})
-        r = pm.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat' + resource,
-                                    headers={'Content-Type': 'application/json'},
-                                    body=encoded_body)
-        ht = json.loads(r.data.decode('utf-8'))
-        if 'success' not in ht :
-            WGErrorPrint("RadThermSetStr", " Unsuccessful POST request of " + what)
-            return RadTherm_str_ERROR
-    except :
-        WGErrorPrint("RadThermSetStr", " Unsuccessful POST request (exception) of " + what)
-        return RadTherm_str_ERROR
+        ret = pman.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat' + resource,
+                                      headers={'Content-Type': 'application/json'},
+                                      body=encoded_body)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if 'success' not in retval:
+            wg_error_print("radtherm_set_str", " Unsuccessful POST request (error) of " + what)
+            return RADTHERM_STR_ERROR
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_set_str", " Unsuccessful POST request (exception) of " + what)
+        return RADTHERM_STR_ERROR
+    return RADTHERM_STR_SUCCESS
 
 ###############################################################################
 #
@@ -245,21 +249,21 @@ def RadThermSetStr(what, value, trace) :
 # Args:
 #   trace = true or false, print trace messages
 #
-def RadThermGetTodaysLowestSetting(trace) :
-    try :
-        pm = PoolManager()
+def radtherm_get_todays_lowest_setting(trace):
+    """Figure out the lowest temp setting in today's program."""
+    try:
+        pman = PoolManager()
         url = 'http://' + TSTAT_IP +'/tstat/program/heat'
-        r = pm.request('GET', url)
-        ht = json.loads(r.data.decode('utf-8'))
-        if trace :
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(ht)
-            WGTracePrint(what + " is " + str(ht[what]))
+        ret = pman.request('GET', url)
+        retval = json.loads(ret.data.decode('utf-8'))
+        if trace:
+            pprt = pprint.PrettyPrinter(indent=4)
+            pprt.pprint(retval)
         wkdy = datetime.datetime.today().weekday()
-        prog = ht[str(wkdy)]
+        prog = retval[str(wkdy)]
         prog.sort()
         return prog[0]
-    except :
-        WGErrorPrint("RadThermGetTodaysLowestSetting", " Unsuccessful POST request")
-        return RadTherm_float_ERROR
-    
+    except Exception: #pylint: disable=W0703
+        wg_error_print("radtherm_get_todays_lowest_setting",
+                       " Unsuccessful POST request (exception)")
+        return RADTHERM_FLOAT_ERROR
