@@ -66,15 +66,10 @@ def setback_tstat():
 
 def run_tstat():
     """ Run the current thermostat prog. """
-    # turn the night light on
-    intret = radtherm_set_int("intensity", NIGHTLIGHT_ON, TRACE)
-    if intret == RADTHERM_INT_ERROR:
-        wg_error_print("run_tstat", "Error setting intensity")
-        return
     # disable hold
     intret = radtherm_set_int("hold", HOLD_DISABLED, TRACE)
     if intret == RADTHERM_INT_ERROR:
-        wg_trace_print("Error setting hold", TRACE)
+        wg_error_print("run_tstat", "Error setting hold")
         return
     # set the tstat to SAVE_ENERGY_MODE
     intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_ENABLE, TRACE)
@@ -87,6 +82,11 @@ def run_tstat():
         wg_error_print("run_tstat", "Error disabling save energy mode")
         return
     # !!! Now should be running current program !!!
+    # turn the night light on
+    intret = radtherm_set_int("intensity", NIGHTLIGHT_ON, TRACE)
+    if intret == RADTHERM_INT_ERROR:
+        wg_error_print("run_tstat", "Error setting intensity")
+        return
 
 
 def main():
