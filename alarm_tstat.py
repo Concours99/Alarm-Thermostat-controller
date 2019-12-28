@@ -11,61 +11,76 @@
 #
 ################################################################################
 from time import sleep
-from time import time
-import RPi.GPIO as GPIO # pylint: disable=E0401
+from gpiozero import Button
 from wg_helper import wg_trace_print
+from wg_helper import wg_error_print
 from wg_radio_thermostat import HOLD_DISABLED
 from wg_radio_thermostat import HOLD_ENABLED
 from wg_radio_thermostat import NIGHTLIGHT_OFF
 from wg_radio_thermostat import NIGHTLIGHT_ON
 from wg_radio_thermostat import RADTHERM_FLOAT_ERROR
 from wg_radio_thermostat import RADTHERM_INT_ERROR
-from wg_radio_thermostat import radtherm_get_int
 from wg_radio_thermostat import radtherm_get_todays_lowest_setting
 from wg_radio_thermostat import radtherm_set_float
 from wg_radio_thermostat import radtherm_set_int
 from wg_radio_thermostat import SAVE_ENERGY_MODE_DISABLE
 from wg_radio_thermostat import SAVE_ENERGY_MODE_ENABLE
-from wg_radio_thermostat import TMODE_HEAT
+from wg_twilio import sendtext
 
-__version__ = "v2.0"
+__version__ = "v3.1"
 TRACE = False
+TEST_MODE = False
 
-RELAY_PIN = 10
-DEBOUNCE_SECONDS = 7.0
-NUM_CALLBACKS_SINCE_HANDLED = 0
+NO_RELAY_PIN_BCM = 15
+NC_RELAY_PIN_BCM = 17
+DEBOUNCE_SECONDS = 5.0
 
-
-def alarm_callback(channel): # pylint: disable=W0613
-    """ Callback for GPIO pin changing from high to low or vice bersa. """
-    global NUM_CALLBACKS_SINCE_HANDLED # pylint: disable=W0603
-    NUM_CALLBACKS_SINCE_HANDLED = NUM_CALLBACKS_SINCE_HANDLED + 1
+NUM_RETRIES = 5 # Number of times to retry a failed call
 
 
-def setback_tstat():
+def setback_tstat(button):
     """ Set the thermostat to the lowest temp setting on today's prog. """
-    setback_temp = radtherm_get_todays_lowest_setting(TRACE)
-    if setback_temp != RADTHERM_FLOAT_ERROR:
-        wg_trace_print("Setting target temp to " + str(setback_temp), TRACE)
-        # set the temporary temperature to the value we found, above
-        floatret = radtherm_set_float("t_heat", setback_temp, TRACE)
-        if floatret == RADTHERM_FLOAT_ERROR:
-            wg_error_print("setback_tstat", "Error setting t_heat")
-            return
-        # set the t-stat to hold
-        intret = radtherm_set_int("hold", HOLD_ENABLED, TRACE)
-        if intret == RADTHERM_INT_ERROR:
-            wg_error_print("setback_tstat", "Error setting hold")
-            return
-        # turn the night light off
-        intret = radtherm_set_int("intensity", NIGHTLIGHT_OFF, TRACE)
-        if intret == RADTHERM_INT_ERROR:
-            wg_error_print("setback_tstat", "Error setting intensity")
-            return
+
+    wg_trace_print("Normally open switch held for " + str(button.active_time) + " seconds", TRACE)
+    if TEST_MODE:
+        return
+    i = 0
+    setback_temp = RADTHERM_FLOAT_ERROR
+    while i < NUM_RETRIES and setback_temp == RADTHERM_FLOAT_ERROR:
+        setback_temp = radtherm_get_todays_lowest_setting(TRACE)
+        if setback_temp != RADTHERM_FLOAT_ERROR:
+            wg_trace_print("Setting target temp to " + str(setback_temp), TRACE)
+            # set the temporary temperature to the value we found, above
+            floatret = radtherm_set_float("t_heat", setback_temp, TRACE)
+            if floatret == RADTHERM_FLOAT_ERROR:
+                wg_error_print("setback_tstat", "Error setting t_heat")
+                return
+            # set the t-stat to hold
+            intret = radtherm_set_int("hold", HOLD_ENABLED, TRACE)
+            if intret == RADTHERM_INT_ERROR:
+                wg_error_print("setback_tstat", "Error setting hold")
+                return
+            # turn the night light off
+            intret = radtherm_set_int("intensity", NIGHTLIGHT_OFF, TRACE)
+            if intret == RADTHERM_INT_ERROR:
+                wg_error_print("setback_tstat", "Error setting intensity")
+                return
+            wg_trace_print("System armed", True)
+        else:
+            sleep(DEBOUNCE_SECONDS)
+            i = i + 1
+    if setback_temp == RADTHERM_FLOAT_ERROR:
+        # Send me a text message to tell me it didn't work
+        sendtext("Unable to set thermostat back.  You'll have to do it via smartphone app.  Sorry.")
 
 
-def run_tstat():
+def run_tstat(button):
     """ Run the current thermostat prog. """
+
+    wg_trace_print("Normally closed switch held for " + str(button.active_time) + " seconds", TRACE)
+    if TEST_MODE:
+        return
+    # wait to see if we get anymore button presses in the next DEBOUNCE_SECONDS seconds
     # disable hold
     intret = radtherm_set_int("hold", HOLD_DISABLED, TRACE)
     if intret == RADTHERM_INT_ERROR:
@@ -87,48 +102,23 @@ def run_tstat():
     if intret == RADTHERM_INT_ERROR:
         wg_error_print("run_tstat", "Error setting intensity")
         return
+    wg_trace_print("System disarmed", True)
 
 
 def main():
     """ alarm_tstat main code. """
-    global NUM_CALLBACKS_SINCE_HANDLED # pylint: disable=W0603
-
-    GPIO.setwarnings(False) # Ignore warning for now
-    GPIO.setmode(GPIO.BOARD) # Use physical pin numbering
-    # Set relay pin to be an input pin
-    GPIO.setup(RELAY_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-    GPIO.add_event_detect(RELAY_PIN, GPIO.BOTH, callback=alarm_callback,
-                          bouncetime=500)
-
-    armed = False
-    running = True
-    previous = time()
 
     wg_trace_print("Alarm/Tstat controller started.  Version: " + __version__, True)
+    armed_switch = Button(NO_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
+    disarmed_switch = Button(NC_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
+    armed_switch.when_held = setback_tstat
+    disarmed_switch.when_held = run_tstat
+
+    # Make sure we start out disarmed and the tstat is running it's program
+    running = True
+    run_tstat(disarmed_switch)
+
     while running:
         sleep(1)
-        current = time()
-        if (current - previous) >= DEBOUNCE_SECONDS:
-            if NUM_CALLBACKS_SINCE_HANDLED > 1:  # we've had several events wait
-                NUM_CALLBACKS_SINCE_HANDLED = 0  # wait until things have calmed
-                                                 # down
-            else:
-                # if the pin goes high
-                if GPIO.input(RELAY_PIN) and not armed:
-                    if radtherm_get_int("tmode", TRACE) == TMODE_HEAT: # heat mode
-                        wg_trace_print("System armed!", True)
-                        # set the thermostat back
-                        setback_tstat()
-                        armed = True
-                elif not GPIO.input(RELAY_PIN) and armed:
-                    if radtherm_get_int("tmode", TRACE) == TMODE_HEAT: # heat mode
-                        wg_trace_print("System disarmed!", True)
-                        # run current program
-                        run_tstat()
-                        armed = False
-            previous = current
-
-    GPIO.cleanup()  # clean up after yourself
 
 main()
