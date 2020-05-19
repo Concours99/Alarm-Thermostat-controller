@@ -4,7 +4,7 @@
 # alarm_tstat.py - Control Radio Thermostat when a switch (i.e., alarm relay) is
 #   armed/disarmed
 #
-# Copyright (C) 2019, Wayne Geiser.  All Rights Reserved.
+# Copyright (C) 2019-2020, Wayne Geiser.  All Rights Reserved.
 # email: geiserw@gmail.com
 #
 # You have no rights to any of this code without expressed permission.
@@ -14,6 +14,7 @@ from time import sleep
 from gpiozero import Button
 from wg_helper import wg_trace_print
 from wg_helper import wg_error_print
+from wg_helper import wg_init_log
 from wg_radio_thermostat import HOLD_DISABLED
 from wg_radio_thermostat import HOLD_ENABLED
 from wg_radio_thermostat import NIGHTLIGHT_OFF
@@ -27,7 +28,7 @@ from wg_radio_thermostat import SAVE_ENERGY_MODE_DISABLE
 from wg_radio_thermostat import SAVE_ENERGY_MODE_ENABLE
 from wg_twilio import sendtext
 
-__version__ = "v3.1"
+__version__ = "v3.2"
 TRACE = False
 TEST_MODE = False
 
@@ -67,8 +68,9 @@ def setback_tstat(button):
                 return
             wg_trace_print("System armed", True)
         else:
-            sleep(DEBOUNCE_SECONDS)
             i = i + 1
+            sleep(DEBOUNCE_SECONDS * i) # delay a little longer each time in hopes it'll work
+            
     if setback_temp == RADTHERM_FLOAT_ERROR:
         # Send me a text message to tell me it didn't work
         sendtext("Unable to set thermostat back.  You'll have to do it via smartphone app.  Sorry.")
@@ -108,6 +110,7 @@ def run_tstat(button):
 def main():
     """ alarm_tstat main code. """
 
+    wg_init_log("err.txt")
     wg_trace_print("Alarm/Tstat controller started.  Version: " + __version__, True)
     armed_switch = Button(NO_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
     disarmed_switch = Button(NC_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
