@@ -3,9 +3,13 @@
 """Routines to query and control Radio Thermostat WiFi thermostat"""
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# Copyright (C) 2018, Wayne Geiser (geiserw@gmail.com).  All Rights Reserved
+# Copyright (C) 2018-2023, Wayne Geiser (geiserw@gmail.com).  All Rights Reserved
 #
 # Helper functiona and definitions to interface with a Radio Thermostat
+#
+# Bugs?
+#   - It appears that getting the night light value always returns 4.
+
 import datetime
 import pprint
 import json
@@ -119,6 +123,7 @@ def radtherm_get_float(what, trace):
 #       tmode = thermostat operating mode (see above for values)
 #       mode = Save Energy mode
 #       hold = Target temperature hold status (see above for values)
+#   `   intensity = nightlight value (0-4)
 #   trace = true or false, print trace messages
 #
 def radtherm_get_int(what, trace):
@@ -128,6 +133,8 @@ def radtherm_get_int(what, trace):
             resource = what
         elif what == "mode":
             resource = "save_energy/"
+        elif what == "intensity":
+            resource = "night_light"
         else:
             wg_error_print("radtherm_get_int", " Invalid 'what' argument " + what)
             return RADTHERM_INT_ERROR
@@ -193,15 +200,15 @@ def radtherm_set_int(what, value, trace):
         if what in ("fmode", "tmode", "hold"):
             resource = ""
         elif what == "mode":
-            resource = "/save_energy"
+            resource = "save_energy"
         elif what == "intensity":
-            resource = "/night_light"
+            resource = "night_light"
         else:
             wg_error_print("radtherm_set_int", " Invalid 'what' argument " + what)
             return RADTHERM_INT_ERROR
         pman = PoolManager()
         encoded_body = json.dumps({what: value})
-        ret = pman.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat' + resource,
+        ret = pman.request_encode_url('POST', 'http://' + TSTAT_IP + '/tstat/' + resource,
                                       headers={'Content-Type': 'application/json'},
                                       body=encoded_body)
         retval = json.loads(ret.data.decode('utf-8'))
