@@ -34,7 +34,7 @@ from wg_messagesender import sendtext
 
 __version__ = "v3.5"
 APP_NAME = "Alarm T-stat Control"
-TRACE = False
+TRACE = True
 TEST_MODE = False
 
 g_Just_Started = True
@@ -50,6 +50,7 @@ NUM_RETRIES = 10 # Number of times to retry a failed call
 
 def setback_tstat(button):
     """ Set the thermostat to the lowest temp setting on today's prog. """
+    global g_Just_Started
 
     wg_trace_print("Normally open switch held for " +
                    str(button.active_time) + " seconds", TRACE)
@@ -60,10 +61,13 @@ def setback_tstat(button):
         return  # try again the next time
     tmode = tstat_status['tmode']   # thermostat mode (heat?)
     if tstat_status['hold'] == HOLD_ENABLED:
+        wg_trace_print("Hold enabled.  Don't do anything", TRACE)
         return # don't mess with the settings, someone wants them this way
     if tmode != TMODE_HEAT:
+        wg_trace_print("We're not in heating mode.  Don't do anything.", TRACE)
         return # don't mess with the settings, we're not heating
     if TEST_MODE:
+        wg_trace_print("Test mode.  Don't do anything.", TRACE)
         return
     i = 0
     setback_temp = RADTHERM_FLOAT_ERROR
@@ -93,7 +97,7 @@ def setback_tstat(button):
             wg_trace_print("Error getting today's lowest setting, trying again in " +
                            str(t) + " seconds", True)
             sleep(t) # delay a little longer each time in hopes it'll work
-            
+    g_Just_Started = False
     if setback_temp == RADTHERM_FLOAT_ERROR:
         # Send me a text message to tell me it didn't work
         sendtext(CELL_PHONE, APP_NAME,
@@ -120,7 +124,6 @@ def run_tstat(button):
         return
     if (tstat_status['hold'] == HOLD_ENABLED) and g_Just_Started:
         # if hold & we just started up, don't mess with the settings
-        g_Just_Started = False # next time through will be because of a change to the alarm
         wg_trace_print("Hold enabled and we just started, not changing t-stat settings", TRACE)
         return
     # disable hold
@@ -145,6 +148,7 @@ def run_tstat(button):
         wg_error_print("run_tstat", "Error setting intensity")
         return
     wg_trace_print("System disarmed", True)
+    g_Just_Started = False # next time through will be because of a change to the alarm
 
 
 def main():
