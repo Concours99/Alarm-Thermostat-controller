@@ -12,30 +12,32 @@
 #
 ###########################################################################
 from time import sleep
-from gpiozero import Button
 from wg_helper import wg_trace_print
 from wg_helper import wg_error_print
 from wg_helper import wg_init_log
-from wg_radio_thermostat import HOLD_DISABLED
-from wg_radio_thermostat import HOLD_ENABLED
-from wg_radio_thermostat import TMODE_HEAT
-from wg_radio_thermostat import NIGHTLIGHT_OFF
-from wg_radio_thermostat import NIGHTLIGHT_ON
-from wg_radio_thermostat import RADTHERM_FLOAT_ERROR
-from wg_radio_thermostat import RADTHERM_INT_ERROR
-from wg_radio_thermostat import radtherm_get_todays_lowest_setting
-from wg_radio_thermostat import radtherm_set_float
-from wg_radio_thermostat import radtherm_set_int
-from wg_radio_thermostat import radtherm_get_int
-from wg_radio_thermostat import radtherm_status
-from wg_radio_thermostat import SAVE_ENERGY_MODE_DISABLE
-from wg_radio_thermostat import SAVE_ENERGY_MODE_ENABLE
+from wg_ecobee import HOLD_ENABLED
+from wg_ecobee import HOLD_DISABLED
+from wg_ecobee import TMODE_HEAT
+from wg_ecobee import TSTAT_ERROR
+from wg_ecobee import ecobee_get_status
+from wg_ecobee import authorize_app_with_ecobee
+from wg_ecobee import ecobee_get_todays_lowest_setting
+from wg_ecobee import ecobee_set_hold_temp
+from wg_ecobee import ecobee_resume_program
+from wg_ecobee import ecobee_send_alert
 from wg_messagesender import sendtext
 
-__version__ = "v3.5"
+__version__ = "v4.1"
 APP_NAME = "Alarm T-stat Control"
-TRACE = True
+TRACE = False
 TEST_MODE = False
+
+if TEST_MODE :
+    class Button():
+        active_time = 0
+else :
+    from gpiozero import Button
+    
 
 g_Just_Started = True
 
@@ -52,9 +54,10 @@ def setback_tstat(button):
     """ Set the thermostat to the lowest temp setting on today's prog. """
     global g_Just_Started
 
-    wg_trace_print("Normally open switch held for " +
-                   str(button.active_time) + " seconds", TRACE)
-    tstat_status = radtherm_status()
+    if not TEST_MODE : # no button to quuery
+        wg_trace_print("Normally open switch held for " +
+                       str(button.active_time) + " seconds", TRACE)
+    tstat_status = ecobee_get_status(TRACE)
     if 'error' in tstat_status:
         wg_error_print("setback_tstat",
                        "Error getting thermostat status.  Skipping...")
@@ -66,30 +69,22 @@ def setback_tstat(button):
     if tmode != TMODE_HEAT:
         wg_trace_print("We're not in heating mode.  Don't do anything.", TRACE)
         return # don't mess with the settings, we're not heating
-    if TEST_MODE:
-        wg_trace_print("Test mode.  Don't do anything.", TRACE)
-        return
     i = 0
-    setback_temp = RADTHERM_FLOAT_ERROR
-    while i < NUM_RETRIES and setback_temp == RADTHERM_FLOAT_ERROR:
-        setback_temp = radtherm_get_todays_lowest_setting(TRACE)
-        if setback_temp != RADTHERM_FLOAT_ERROR:
+    setback_temp = TSTAT_ERROR
+    while i < NUM_RETRIES and setback_temp == TSTAT_ERROR:
+        setback_temp = ecobee_get_todays_lowest_setting(TRACE)        
+        if setback_temp != TSTAT_ERROR:
             wg_trace_print("Setting target temp to " + str(setback_temp), TRACE)
             # set the temporary temperature to the value we found, above
-            floatret = radtherm_set_float("t_heat", setback_temp, TRACE)
-            if floatret == RADTHERM_FLOAT_ERROR:
+            ret = ecobee_set_hold_temp(setback_temp, TRACE)
+            if ret == TSTAT_ERROR:
                 wg_error_print("setback_tstat", "Error setting t_heat")
                 return
-            # set the t-stat to hold
-            intret = radtherm_set_int("hold", HOLD_ENABLED, TRACE)
-            if intret == RADTHERM_INT_ERROR:
-                wg_error_print("setback_tstat", "Error setting hold")
-                return
             # turn the night light off
-            intret = radtherm_set_int("intensity", NIGHTLIGHT_OFF, TRACE)
-            if intret == RADTHERM_INT_ERROR:
-                wg_error_print("setback_tstat", "Error setting intensity")
-                return
+            # ret = ecobee_set_intensity(NIGHTLIGHT_OFF, TRACE)
+            # if ret == TSTAT_ERROR:
+            #     wg_error_print("setback_tstat", "Error setting intensity")
+            #    return
             wg_trace_print("System armed", True)
         else:
             i = i + 1
@@ -98,19 +93,19 @@ def setback_tstat(button):
                            str(t) + " seconds", True)
             sleep(t) # delay a little longer each time in hopes it'll work
     g_Just_Started = False
-    if setback_temp == RADTHERM_FLOAT_ERROR:
+    if setback_temp == TSTAT_ERROR:
         # Send me a text message to tell me it didn't work
         sendtext(CELL_PHONE, APP_NAME,
                  "Unable to set thermostat back.  You'll have to do it via smartphone app.  Sorry.")
-
 
 def run_tstat(button):
     """ Run the current thermostat prog. """
     global g_Just_Started
 
-    wg_trace_print("Normally closed switch held for " +
-                   str(button.active_time) + " seconds", TRACE)
-    tstat_status = radtherm_status()
+    if not TEST_MODE : # no button to query
+        wg_trace_print("Normally closed switch held for " +
+                       str(button.active_time) + " seconds", TRACE)
+    tstat_status = ecobee_get_status(TRACE)
     if 'error' in tstat_status:
         wg_error_print("run_tstat",
                        "Error getting thermostat status.  Skipping...")
@@ -119,34 +114,21 @@ def run_tstat(button):
     if tmode != TMODE_HEAT:
         wg_trace_print("We're not in heating mode.  Don't do anything.", TRACE)
         return # don't mess with the settings, we're not heating
-    if TEST_MODE:
-        wg_trace_print("Test mode.  Don't do anything.", TRACE)
-        return
     if (tstat_status['hold'] == HOLD_ENABLED) and g_Just_Started:
         # if hold & we just started up, don't mess with the settings
         wg_trace_print("Hold enabled and we just started, not changing t-stat settings", TRACE)
         return
     # disable hold
-    intret = radtherm_set_int("hold", HOLD_DISABLED, TRACE)
-    if intret == RADTHERM_INT_ERROR:
-        wg_error_print("run_tstat", "Error setting hold")
-        return
-    # set the tstat to SAVE_ENERGY_MODE
-    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_ENABLE, TRACE)
-    if intret == RADTHERM_INT_ERROR:
-        wg_error_print("run_tstat", "Error enabling save energy mode")
-        return
-    # turn off SAVE_ENERGY_MODE
-    intret = radtherm_set_int("mode", SAVE_ENERGY_MODE_DISABLE, TRACE)
-    if intret == RADTHERM_INT_ERROR:
-        wg_error_print("run_tstat", "Error disabling save energy mode")
+    ret = ecobee_resume_program(TRACE)
+    if ret == TSTAT_ERROR:
+        wg_error_print("run_tstat", "Error disabling hold")
         return
     # !!! Now should be running current program !!!
     # turn the night light on
-    intret = radtherm_set_int("intensity", NIGHTLIGHT_ON, TRACE)
-    if intret == RADTHERM_INT_ERROR:
-        wg_error_print("run_tstat", "Error setting intensity")
-        return
+    # ret = ecobee_set_intensity(NIGHTLIGHT_ON, TRACE)
+    # if ret == TSTAT_ERROR:
+    #     wg_error_print("run_tstat", "Error setting intensity")
+    #     return
     wg_trace_print("System disarmed", True)
     g_Just_Started = False # next time through will be because of a change to the alarm
 
@@ -154,18 +136,35 @@ def run_tstat(button):
 def main():
     """ alarm_tstat main code. """
 
+    authorize_app_with_ecobee(TRACE) # We only need to do this at startup because we reboot once a day
     wg_init_log("err.txt")
     wg_trace_print("Alarm/Tstat controller started.  Version: " + __version__, True)
-    armed_switch = Button(NO_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
-    disarmed_switch = Button(NC_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS, pull_up=True)
-    armed_switch.when_held = setback_tstat
-    disarmed_switch.when_held = run_tstat
+    if not TEST_MODE :
+        armed_switch = Button(NO_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS)
+        disarmed_switch = Button(NC_RELAY_PIN_BCM, hold_time=DEBOUNCE_SECONDS, pull_up=True)
+        armed_switch.when_held = setback_tstat
+        disarmed_switch.when_held = run_tstat
 
     # Make sure we start out disarmed and the tstat is running it's program
     running = True
-    run_tstat(disarmed_switch)
+    if TEST_MODE :
+        b = Button()
+        run_tstat(b)
+    else :
+        run_tstat(disarmed_switch)
 
+    if TEST_MODE :
+        print("1 alarm armed - 2 alarm disarmed")
     while running:
-        sleep(1)
+        if TEST_MODE:
+            num = int(input())
+            if num == 1 :
+                setback_tstat(0)
+            elif  num == 2 :
+                run_tstat(0)
+            else :
+                wg_error_print("main", "Bad input: expecting either 1 to setback or 2 to resume")
+        else :
+            sleep(1)
 
 main()

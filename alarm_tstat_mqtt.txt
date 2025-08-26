@@ -1,0 +1,19 @@
+alarm-tstat.py
+
+Original:
+Updated: 2023-Nov-5
+
+- Changed wg_messagesender.py to send to txt.att.net rather than
+  mailmymobile.net.  While playing with my home assistant, I found the latter
+  didn't work any more.
+  
+Updated: 2023-Nov-29 (v5.0)
+
+- Remove all the thermostat controlling code and replace it with mqtt publish
+  calls to let the home assistant deal with the thermostat  
+
+Future directions:
+
+- Perhaps make this into a "dumber" solution?
+  For example an esp8266 or a modified door/window sensor that home assistant
+  already has support for.

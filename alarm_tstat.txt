@@ -1,0 +1,12 @@
+alarm-tstat.py
+
+Original:
+Updated: 2023-Nov-5
+
+- Changed wg_messagesender.py to send to txt.att.net rather than mailmymobile.net.  While playing with my home assistant, I found the
+  latter didn't work any more.
+
+Future directions:
+	1) Create a thingspeak data channel to store the status of the alarm system so that other
+		systems (e.g., kitchen weather station) can decide to do things depending on that status.
+		Perhaps this should be a Home_status value with the 1's digit being alarm status

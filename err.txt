@@ -1,0 +1,285 @@
+[I 230914 16:06:15 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:07:06 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:14:45 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:14:55 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:14:55 wg_helper:32] Normally closed switch held for 0 seconds
+[E 230914 16:14:56 wg_helper:40] run_tstat: Error setting hold
+[I 230914 16:16:20 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:16:20 wg_helper:40] run_tstat: Error setting hold
+[I 230914 16:17:32 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:17:33 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230914 16:19:06 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:19:07 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:23:46 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:23:46 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:26:17 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:26:18 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:29:41 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:29:41 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:32:39 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:32:39 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:33:29 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 16:33:30 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 16:38:21 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:38:21 wg_helper:32] System disarmed
+[I 230914 16:39:17 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:39:17 wg_helper:32] System disarmed
+[E 230914 16:39:33 wg_helper:40] main: Bad input: expecting either 1 to setback or 2 to resume
+[I 230914 16:40:15 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:40:15 wg_helper:32] System disarmed
+[I 230914 16:40:18 wg_helper:32] Setting target temp to 580
+[E 230914 16:40:18 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230914 16:41:25 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:41:25 wg_helper:32] System disarmed
+[I 230914 16:41:28 wg_helper:32] Setting target temp to 580
+[E 230914 16:41:28 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230914 16:44:17 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:44:18 wg_helper:32] System disarmed
+[I 230914 16:44:20 wg_helper:32] Setting target temp to 580
+[E 230914 16:44:20 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230914 16:47:04 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 16:47:04 wg_helper:32] System disarmed
+[I 230914 16:47:06 wg_helper:32] Setting target temp to 580
+[I 230914 16:47:06 wg_helper:32] setback temp is 580
+[E 230914 16:47:06 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230914 17:30:30 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 17:30:30 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 17:32:28 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 17:32:29 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 17:38:38 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 17:38:38 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 17:42:57 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230914 17:44:45 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 17:44:45 wg_helper:40] run_tstat: Error disabling hold
+[I 230914 17:46:14 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230914 17:46:14 wg_helper:40] run_tstat: Error disabling hold
+[I 230915 12:30:54 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:30:54 wg_helper:32] We're not in heating mode.  Don't do anything.
+[I 230915 12:31:10 wg_helper:32] Hold enabled.  Don't do anything
+[I 230915 12:32:52 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:32:52 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230915 12:32:59 wg_helper:32] Hold enabled.  Don't do anything
+[I 230915 12:33:04 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230915 12:33:11 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230915 12:33:13 wg_helper:32] Hold enabled.  Don't do anything
+[I 230915 12:34:41 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:34:41 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230915 12:34:52 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:34:52 wg_helper:32] Hold enabled and we just started, not changing t-stat settings
+[I 230915 12:35:04 wg_helper:32] Hold enabled.  Don't do anything
+[I 230915 12:41:27 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[E 230915 12:41:28 wg_helper:40] run_tstat: Error disabling hold
+[I 230915 12:46:46 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:46:47 wg_helper:32] System disarmed
+[I 230915 12:46:53 wg_helper:32] Setting target temp to 580
+[I 230915 12:46:53 wg_helper:32] setback temp is 580
+[E 230915 12:46:53 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230915 12:51:05 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 12:51:06 wg_helper:32] System disarmed
+[I 230915 12:51:11 wg_helper:32] Setting target temp to 580
+[I 230915 12:51:11 wg_helper:32] setback temp is 580
+[E 230915 12:51:11 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230915 13:02:07 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:02:08 wg_helper:32] System disarmed
+[I 230915 13:02:27 wg_helper:32] Setting target temp to 580
+[I 230915 13:02:27 wg_helper:32] setback_temp is 580
+[I 230915 13:02:27 wg_helper:32] System armed
+[I 230915 13:03:10 wg_helper:32] System disarmed
+[I 230915 13:04:40 wg_helper:32] Setting target temp to 580
+[I 230915 13:04:40 wg_helper:32] setback_temp is 580
+[I 230915 13:04:41 wg_helper:32] System armed
+[I 230915 13:11:40 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:11:41 wg_helper:32] System disarmed
+[I 230915 13:11:44 wg_helper:32] Setting target temp to 580
+[I 230915 13:11:44 wg_helper:32] setback_temp is 580
+[E 230915 13:11:45 wg_helper:40] ecobee_set_hold_temp: Hold did not get set!
+[I 230915 13:11:45 wg_helper:32] System armed
+[I 230915 13:12:22 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:12:23 wg_helper:32] System disarmed
+[I 230915 13:12:25 wg_helper:32] Setting target temp to 580
+[I 230915 13:12:25 wg_helper:32] setback_temp is 580
+[E 230915 13:12:26 wg_helper:40] ecobee_set_hold_temp: Hold did not get set!
+[E 230915 13:12:26 wg_helper:40] setback_tstat: Error setting t_heat
+[I 230915 13:13:55 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:13:56 wg_helper:32] System disarmed
+[I 230915 13:13:59 wg_helper:32] Setting target temp to 580
+[I 230915 13:13:59 wg_helper:32] setback_temp is 580
+[I 230915 13:13:59 wg_helper:32] System armed
+[I 230915 13:14:14 wg_helper:32] System disarmed
+[I 230915 13:20:58 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:20:59 wg_helper:32] System disarmed
+[I 230915 13:22:19 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:22:19 wg_helper:32] System disarmed
+[I 230915 13:22:38 wg_helper:32] Setting target temp to 580
+[I 230915 13:22:38 wg_helper:32] setback_temp is 580
+[I 230915 13:22:38 wg_helper:32] System armed
+[I 230915 13:25:15 wg_helper:32] System disarmed
+[I 230915 13:25:27 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:25:28 wg_helper:32] System disarmed
+[I 230915 13:26:09 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:26:10 wg_helper:32] System disarmed
+[I 230915 13:28:38 wg_helper:32] Setting target temp to 580
+[I 230915 13:28:38 wg_helper:32] setback_temp is 580
+[I 230915 13:28:38 wg_helper:32] System armed
+[I 230915 13:28:57 wg_helper:32] System disarmed
+[I 230915 13:40:34 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 13:40:35 wg_helper:32] System disarmed
+[I 230915 13:40:53 wg_helper:32] System armed
+[I 230915 13:41:16 wg_helper:32] System disarmed
+[I 230915 13:44:22 wg_helper:32] Alarm/Tstat controller started.  Version: v4.0
+[I 230915 16:44:46 wg_helper:32] Alarm/Tstat controller started.  Version: v4.1
+[I 230915 16:46:39 wg_helper:32] Alarm/Tstat controller started.  Version: v4.1
+[I 230915 16:47:04 wg_helper:32] Alarm/Tstat controller started.  Version: v4.1
+[I 230915 16:47:35 wg_helper:32] System armed
+[I 230915 16:47:46 wg_helper:32] System disarmed
+[I 231013 17:59:47 wg_helper:32] Alarm/Tstat controller started.  Version: v4.1
+[I 231013 17:59:47 wg_helper:32] System disarmed
+[I 231013 18:00:03 wg_helper:32] System armed
+[I 231013 18:00:21 wg_helper:32] System disarmed
+[I 231119 18:24:13 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:24:13 wg_helper:32] System disarmed
+[I 231119 18:25:10 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:25:31 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:25:31 wg_helper:32] System disarmed
+[I 231119 18:25:39 wg_helper:32] System armed
+[I 231119 18:25:53 wg_helper:32] System disarmed
+[I 231119 18:26:45 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:26:45 wg_helper:32] System disarmed
+[I 231119 18:26:53 wg_helper:32] System armed
+[I 231119 18:27:13 wg_helper:32] System disarmed
+[I 231119 18:39:32 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:39:32 wg_helper:32] System disarmed
+[I 231119 18:39:42 wg_helper:32] System armed
+[I 231119 18:39:50 wg_helper:32] System disarmed
+[I 231119 18:40:22 wg_helper:32] System armed
+[I 231119 18:40:32 wg_helper:32] System disarmed
+[I 231119 18:41:26 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:41:26 wg_helper:32] System disarmed
+[I 231119 18:41:29 wg_helper:32] System armed
+[I 231119 18:41:36 wg_helper:32] System disarmed
+[I 231119 18:45:34 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:45:34 wg_helper:32] System disarmed
+[I 231119 18:45:36 wg_helper:32] System armed
+[I 231119 18:45:40 wg_helper:32] System disarmed
+[I 231119 18:50:29 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:50:29 wg_helper:32] System disarmed
+[I 231119 18:50:31 wg_helper:32] System armed
+[I 231119 18:50:35 wg_helper:32] System disarmed
+[I 231119 18:52:10 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:52:10 wg_helper:32] System disarmed
+[I 231119 18:52:12 wg_helper:32] System armed
+[I 231119 18:52:18 wg_helper:32] System disarmed
+[I 231119 18:53:53 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231119 18:53:53 wg_helper:32] System disarmed
+[I 231119 18:53:55 wg_helper:32] System armed
+[I 231119 18:54:02 wg_helper:32] System disarmed
+[I 231120 18:21:16 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:21:17 wg_helper:32] System disarmed
+[I 231120 18:21:20 wg_helper:32] System armed
+[I 231120 18:21:28 wg_helper:32] System disarmed
+[I 231120 18:37:00 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:37:00 wg_helper:32] System disarmed
+[I 231120 18:37:02 wg_helper:32] System armed
+[I 231120 18:37:11 wg_helper:32] System disarmed
+[I 231120 18:42:59 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:42:59 wg_helper:32] System disarmed
+[I 231120 18:43:01 wg_helper:32] System armed
+[I 231120 18:43:06 wg_helper:32] System disarmed
+[I 231120 18:44:00 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:44:00 wg_helper:32] System disarmed
+[I 231120 18:44:02 wg_helper:32] System armed
+[I 231120 18:44:08 wg_helper:32] System disarmed
+[I 231120 18:45:04 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:45:04 wg_helper:32] System disarmed
+[I 231120 18:45:05 wg_helper:32] System armed
+[I 231120 18:45:11 wg_helper:32] System disarmed
+[I 231120 18:49:27 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231120 18:49:27 wg_helper:32] System disarmed
+[I 231127 15:51:27 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 15:51:27 wg_helper:32] System disarmed
+[I 231127 16:34:16 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 16:34:16 wg_helper:32] System disarmed
+[I 231127 16:34:28 wg_helper:32] System armed
+[I 231127 16:34:37 wg_helper:32] System disarmed
+[I 231127 17:08:41 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:08:41 wg_helper:32] System disarmed
+[I 231127 17:08:50 wg_helper:32] System armed
+[I 231127 17:08:56 wg_helper:32] System disarmed
+[I 231127 17:14:18 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:14:18 wg_helper:32] System disarmed
+[I 231127 17:14:21 wg_helper:32] System armed
+[I 231127 17:14:34 wg_helper:32] System disarmed
+[I 231127 17:18:13 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:18:13 wg_helper:32] System disarmed
+[I 231127 17:18:20 wg_helper:32] System armed
+[I 231127 17:18:25 wg_helper:32] System disarmed
+[I 231127 17:19:22 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:19:22 wg_helper:32] System disarmed
+[I 231127 17:19:23 wg_helper:32] System armed
+[I 231127 17:19:29 wg_helper:32] System disarmed
+[I 231127 17:28:02 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:28:02 wg_helper:32] System disarmed
+[I 231127 17:28:02 wg_helper:32] (0, 1)
+[I 231127 17:28:04 wg_helper:32] System armed
+[I 231127 17:28:04 wg_helper:32] (7, 2)
+[I 231127 17:28:47 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:28:47 wg_helper:32] System disarmed
+[I 231127 17:28:47 wg_helper:32] (0, 1)
+[I 231127 17:31:12 wg_helper:32] System armed
+[I 231127 17:31:12 wg_helper:32] (0, 2)
+[I 231127 17:32:35 wg_helper:32] System disarmed
+[I 231127 17:32:35 wg_helper:32] (7, 3)
+[I 231127 17:40:58 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:40:58 wg_helper:32] System disarmed
+[I 231127 17:40:58 wg_helper:32] (0, 1)
+[I 231127 17:41:04 wg_helper:32] System armed
+[I 231127 17:41:04 wg_helper:32] (7, 2)
+[I 231127 17:41:08 wg_helper:32] System disarmed
+[I 231127 17:41:08 wg_helper:32] (4, 3)
+[I 231127 17:41:12 wg_helper:32] System armed
+[I 231127 17:41:12 wg_helper:32] (4, 4)
+[I 231127 17:41:14 wg_helper:32] System disarmed
+[I 231127 17:41:14 wg_helper:32] (4, 5)
+[I 231127 17:41:17 wg_helper:32] System armed
+[I 231127 17:41:17 wg_helper:32] (4, 6)
+[I 231127 17:44:20 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:44:20 wg_helper:32] System disarmed
+[I 231127 17:44:20 wg_helper:32] (0, 1)
+[I 231127 17:44:25 wg_helper:32] System armed
+[I 231127 17:44:25 wg_helper:32] (0, 2)
+[I 231127 17:44:39 wg_helper:32] System disarmed
+[I 231127 17:44:39 wg_helper:32] (7, 3)
+[I 231127 17:48:25 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231127 17:48:25 wg_helper:32] System disarmed
+[I 231127 17:48:25 wg_helper:32] (0, 1)
+[I 231127 17:48:29 wg_helper:32] System armed
+[I 231127 17:48:29 wg_helper:32] (0, 2)
+[I 231127 17:48:31 wg_helper:32] System disarmed
+[I 231127 17:48:31 wg_helper:32] (7, 3)
+[I 231128 11:24:36 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:25:10 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:25:10 wg_helper:32] System disarmed
+[I 231128 11:26:10 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:26:10 wg_helper:32] System disarmed
+[I 231128 11:28:16 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:28:16 wg_helper:32] System disarmed
+[I 231128 11:28:27 wg_helper:32] System armed
+[I 231128 11:28:33 wg_helper:32] System disarmed
+[I 231128 11:28:45 wg_helper:32] System armed
+[I 231128 11:28:53 wg_helper:32] System disarmed
+[I 231128 11:29:19 wg_helper:32] System armed
+[I 231128 11:30:10 wg_helper:32] System disarmed
+[I 231128 11:30:12 wg_helper:32] System armed
+[I 231128 11:30:14 wg_helper:32] System disarmed
+[I 231128 11:44:45 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:44:45 wg_helper:32] System disarmed
+[I 231128 11:44:48 wg_helper:32] System armed
+[I 231128 11:44:51 wg_helper:32] System disarmed
+[I 231128 11:50:27 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231128 11:50:27 wg_helper:32] System disarmed
+[I 231128 11:50:30 wg_helper:32] System armed
+[I 231128 11:50:33 wg_helper:32] System disarmed
+[I 231129 12:02:02 wg_helper:32] Alarm/Tstat controller started.  Version: v5.0
+[I 231129 12:02:02 wg_helper:32] System disarmed
+[I 231129 12:02:05 wg_helper:32] System armed
+[I 231129 12:02:08 wg_helper:32] System disarmed

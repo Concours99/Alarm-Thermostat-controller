@@ -11,10 +11,11 @@
 """Interface to a email and text (SMS)"""
 import mailtrap as mt
 
-CARRIERDOMAIN = "mailmymobile.net"
+# CARRIERDOMAIN = "mailmymobile.net" # This stopped working for Consumer Cellular, noticed 2023-Nov
+CARRIERDOMAIN = "txt.att.net"
 FROMEMAILADDR = "pythonapps@geiserweb.com"
 FROMEMAILNAME = "WG Python app"
-MAILTRAPTOKEN = "ad5aece19dda273875ac70428ffca399"
+MAILTRAPTOKEN = "9865f60bf9b7987b7bbf3d8f2d4c35a7"
 
 ####################################################################
 #
